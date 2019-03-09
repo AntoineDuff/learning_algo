@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # Initializer vos paramètres
 
-    train, train_labels, test, test_labels = load_datasets.load_iris_dataset(0.3)
+    train, train_labels, test, test_labels = load_datasets.load_iris_dataset(0.8)
 
     # Initializer/instanciez vos classifieurs avec leurs paramètres
 
@@ -39,19 +39,7 @@ if __name__ == "__main__":
 
     b.test(test, test_labels)
     rr = clf.score(test, test_labels)
-    # true = []
-    # tt = []
-    # count = 0
-    # b.predict(test[24], test_labels[24])
-    # for x, y in zip(test, test_labels):
-    #     true.append(clf.predict(np.asarray([x])))
-    #     tt.append(b.predict(x, y))
-    #     if b.predict(x, y)!= clf.predict(np.asarray([x]))[0]:
-    #         print(x, "ERROOOOOOORRR")
-    #     print(b.predict(x, y), clf.predict(np.asarray([x]))[0])
-    #     count = count +1
-    # print(tt)
-    # print(true)
+
 
 
     # Charger/lire les datasets

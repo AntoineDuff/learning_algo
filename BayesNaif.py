@@ -10,7 +10,6 @@ je vais avoir besoin de tester les méthodes test, predict et test de votre code
 import numpy as np
 
 class BayesNaif:
-    def __init__(self):
         
     def train(self, train, train_labels):
         self.cnt_classes_occ = np.bincount(train_labels)
@@ -20,7 +19,7 @@ class BayesNaif:
         self._shared_cov_mat = self._shared_naive_cov_mats()
 
     def predict(self, exemple, label):
-        h = ((-0.5) * np.sum(np.power(exemple[None, :] - self._means, 2) / 
+        h = ((-1/2) * np.sum(np.power(exemple[None, :] - self._means, 2) / 
             np.diagonal(self._shared_cov_mat)[None, :], axis=1) +
             np.log(self._priors))
         pred = np.argmax(h)
@@ -65,7 +64,7 @@ class BayesNaif:
                     mat_i.append(data)
 
             mat_i = np.asarray(mat_i)
-            cov_mat_i.append(np.cov(mat_i.T, bias=False))
+            cov_mat_i.append(np.cov(mat_i.T, bias=True))
 
         return np.asarray(cov_mat_i)
 
