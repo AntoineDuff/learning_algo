@@ -27,7 +27,7 @@ def load_iris_dataset(train_ratio):
     """
     
     random.seed(1) # Pour avoir les meme nombres aléatoires à chaque initialisation.
-    np.random.seed(1)
+    np.random.seed(3)
     # Vous pouvez utiliser des valeurs numériques pour les différents types de classes, tel que :
     conversion_labels = {'Iris-setosa': 0, 'Iris-versicolor' : 1, 'Iris-virginica' : 2}
     

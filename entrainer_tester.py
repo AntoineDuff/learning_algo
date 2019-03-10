@@ -5,22 +5,17 @@ import BayesNaif # importer la classe du classifieur bayesien
 import Knn # importer la classe du Knn
 #importer d'autres fichiers et classes si vous en avez développés
 
+def K_folds(X, y, n_splits=5):
+    indices = np.arange(len(X))
+    np.random.shuffle(indices)
+    X_shuffled = X[indices]
+    y_shuffled = y[indices]
+    
 if __name__ == "__main__":
-
-    """
-    C'est le fichier main duquel nous allons tout lancer
-    Vous allez dire en commentaire c'est quoi les paramètres que vous avez utilisés
-    En gros, vous allez :
-    1- Initialiser votre classifieur avec ses paramètres
-    2- Charger les datasets
-    3- Entrainer votre classifieur
-    4- Le tester
-
-    """
 
     # Initializer vos paramètres
 
-    train, train_labels, test, test_labels = load_datasets.load_iris_dataset(0.8)
+    train, train_labels, test, test_labels = load_datasets.load_monks_dataset(1)
 
     # Initializer/instanciez vos classifieurs avec leurs paramètres
 
@@ -39,7 +34,21 @@ if __name__ == "__main__":
 
     b.test(test, test_labels)
     rr = clf.score(test, test_labels)
-
+    print(rr)
+    # true = []
+    # tt = []
+    # count = 0
+    # for x, y in zip(test, test_labels):
+    #     true.append(clf.predict(np.asarray([x])))
+    #     tt.append(b.predict(x, y))
+    #     if b.predict(x, y)!= clf.predict(np.asarray([x]))[0]:
+    #         print(clf.predict_proba(np.asarray([x])))
+    #         b.predict(x, y)
+    #         print(x, "ERROOOOOOORRR")
+    #     print(b.predict(x, y), clf.predict(np.asarray([x]))[0])
+    #     count = count +1
+    # print(tt)
+    # print(true)
 
 
     # Charger/lire les datasets
