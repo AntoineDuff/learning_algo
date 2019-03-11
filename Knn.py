@@ -61,23 +61,23 @@ class Knn:
 
         return precision
 
-    def test(self, test, test_labels):
-
+    def test(self, test, test_labels, muted=False):
+        #muted: print or do not print results
+        
         pred = list(map(lambda x, label: self.predict(x, label), test, test_labels))
 
         score = self.accuracy(pred, test_labels)
-        print("Accuracy: ", score, '\n')
-
         confusion_matrix = self.confusion_matrix(pred, test_labels)
-        print("Confusion Matrix:\n", confusion_matrix, '\n')
-
         precision = self.precision(confusion_matrix)
-        print("Precision: ", precision, '\n')
-
         recall = self.recall(confusion_matrix)
-        print("Recall: ",recall, '\n')
+        if not muted:
+            print("Accuracy: ", score, '\n')
+            print("Confusion Matrix:\n", confusion_matrix, '\n')
+            print("Precision: ", precision, '\n')
+            print("Recall: ",recall, '\n')
 
-        self.recall(confusion_matrix)
+        return score
+
 
 
             
