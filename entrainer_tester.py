@@ -37,24 +37,25 @@ if __name__ == "__main__":
     train, train_labels, test, test_labels = load_datasets.load_iris_dataset(0.8)
 
     # Initializer/instanciez vos classifieurs avec leurs paramètres
-
-    knn_clf = Knn.Knn(n_neighbors=5)
-
-    kf = K_folds(n_splits=5)
+    kf = K_folds(n_splits=10)
     train_kf, train_label_kf = kf.split(train, train_labels)
+    k_neighb = [1, 3, 5, 7, 9, 11, 13, 15]
+    for k in k_neighb:
+        knn_clf = Knn.Knn(n_neighbors=k)
+        # kf = K_folds(n_splits=10)
+        # train_kf, train_label_kf = kf.split(train, train_labels)
+        avg_score = 0
+        for train_inds, test_inds in zip (train_kf, train_label_kf):
+            X_train = train[train_inds]
+            y_train = train_labels[train_inds]
+            X_test = train[test_inds]
+            y_test = train_labels[test_inds]
 
-    avg_score = 0
-    for train_inds, test_inds in zip (train_kf, train_label_kf):
-        X_train = train[train_inds]
-        y_train = train_labels[train_inds]
-        X_test = train[test_inds]
-        y_test = train_labels[test_inds]
+            knn_clf.train(X_train, y_train)
+            avg_score += knn_clf.test(X_test, y_test, muted=True)
 
-        knn_clf.train(X_train, y_train)
-        avg_score += knn_clf.test(X_test, y_test, muted=True)
-
-    avg_score = avg_score / kf.n_splits
-    print(avg_score)
+        avg_score = avg_score / kf.n_splits
+        print(f"k = {k}, score: ", avg_score)
 
     from sklearn.naive_bayes import GaussianNB
 
