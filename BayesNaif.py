@@ -34,11 +34,44 @@ class BayesNaif:
 
         return score
 
+    def confusion_matrix(self, pred_label, true_label):
+        labels = np.unique(true_label, return_counts=True)
+
+        #build the confusion matrix
+        #y = prediction x=actual class
+        confusion_mat = np.zeros((len(labels[0]), len(labels[0])))
+        
+        for pred_y, true_y in zip(pred_label, true_label):
+            confusion_mat[pred_y][true_y] += 1
+
+        return confusion_mat
+
+    def recall(self, confusion_mat):
+        recall =  np.diagonal(confusion_mat) / np.sum(confusion_mat, axis=0)
+
+        return recall
+
+    def precision(self, confusion_mat):
+        precision =  np.diagonal(confusion_mat) / np.sum(confusion_mat, axis=1)
+
+        return precision
+
     def test(self, test, test_labels):
         pred = list(map(lambda x, label: self.predict(x, label), test, test_labels))
-
+        
         score = self.accuracy(pred, test_labels)
         print("Accuracy: ", score, '\n')
+
+        confusion_matrix = self.confusion_matrix(pred, test_labels)
+        print("Confusion Matrix:\n", confusion_matrix, '\n')
+
+        precision = self.precision(confusion_matrix)
+        print("Precision: ", precision, '\n')
+
+        recall = self.recall(confusion_matrix)
+        print("Recall: ",recall, '\n')
+
+        self.recall(confusion_matrix)
 
     def _compute_classes_means(self, train, train_labels):
         classes = np.unique(train_labels)
@@ -68,6 +101,7 @@ class BayesNaif:
             mat_i = np.asarray(mat_i)
             cov_mat_i.append(np.cov(mat_i.T, bias=True))
             diag_cov_mat.append(np.diagonal(np.cov(mat_i.T, bias=True)))
+
         return np.asarray(cov_mat_i), np.asarray(diag_cov_mat)
 
 
@@ -89,6 +123,7 @@ class BayesNaif:
             joint_log_likelihood.append(jointi + n_ij)
 
         joint_log_likelihood = np.array(joint_log_likelihood).T
+        
         return joint_log_likelihood
         
 
