@@ -11,7 +11,7 @@ class K_folds:
 
     def split(self, X, y):
         # determine the minimum splittable len of the dataset for n folds 
-        stop = len(X) - len(X) % self.n_splits
+        stop = len(X) - (len(X) % self.n_splits)
         fold_len = int(stop / self.n_splits)
         indices = np.arange(len(X))
         np.random.shuffle(indices)
@@ -33,42 +33,35 @@ class K_folds:
 if __name__ == "__main__":
 
     # Initializer vos paramètres
-
     train, train_labels, test, test_labels = load_datasets.load_iris_dataset(0.8)
 
     # Initializer/instanciez vos classifieurs avec leurs paramètres
     kf = K_folds(n_splits=10)
     train_kf, train_label_kf = kf.split(train, train_labels)
     k_neighb = [1, 3, 5, 7, 9, 11, 13, 15]
+    metrics = ['minkowski', 'manhattan', 'euclidean']
     for k in k_neighb:
-        knn_clf = Knn.Knn(n_neighbors=k)
-        # kf = K_folds(n_splits=10)
-        # train_kf, train_label_kf = kf.split(train, train_labels)
-        avg_score = 0
-        for train_inds, test_inds in zip (train_kf, train_label_kf):
-            X_train = train[train_inds]
-            y_train = train_labels[train_inds]
-            X_test = train[test_inds]
-            y_test = train_labels[test_inds]
+        for metric in metrics:
+            knn_clf = Knn.Knn(n_neighbors=k, metric=metric)
+            # kf = K_folds(n_splits=10)
+            # train_kf, train_label_kf = kf.split(train, train_labels)
+            avg_score = 0
+            for train_inds, test_inds in zip (train_kf, train_label_kf):
+                X_train = train[train_inds]
+                y_train = train_labels[train_inds]
+                X_test = train[test_inds]
+                y_test = train_labels[test_inds]
 
-            knn_clf.train(X_train, y_train)
-            avg_score += knn_clf.test(X_test, y_test, muted=True)
+                knn_clf.train(X_train, y_train)
+                avg_score += knn_clf.test(X_test, y_test, muted=True)
 
-        avg_score = avg_score / kf.n_splits
-        print(f"k = {k}, score: ", avg_score)
+            avg_score = avg_score / kf.n_splits
+            print(f"k = {k}, metric: {metric} ,score: ", avg_score)
 
-    from sklearn.naive_bayes import GaussianNB
 
-    clf = GaussianNB()
-    clf.fit(train, train_labels)
-
-    b = BayesNaif.BayesNaif()
-    b.train(train, train_labels)
-
-    b.test(test, test_labels)
-    rr = clf.score(test, test_labels)
-    print(rr)
-
+    BN_clf = BayesNaif.BayesNaif()
+    BN_clf.train(train, train_labels)
+    BN_clf.test(test, test_labels)
 
     # Charger/lire les datasets
 

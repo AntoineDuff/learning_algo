@@ -21,10 +21,18 @@ class Knn:
 
     def predict(self, exemple, label):
         #eucledian distance
+        if self._metric == 'euclidean':
+            dist = list(map(lambda x : np.linalg.norm(exemple - x), self._data))
+        
         if self._metric == 'minkowski':
-            dist = list(map(lambda x : np.linalg.norm(exemple - x), self._data))
+            def minkowski_dist(vec):
+                p = vec.shape[0]
+                return np.sum(np.absolute(vec) ** p) ** (1 / p)
+
+            dist = list(map(lambda x : minkowski_dist(exemple - x), self._data))
+        
         if self._metric == 'manhattan':
-            dist = list(map(lambda x : np.linalg.norm(exemple - x), self._data))
+            dist = list(map(lambda x : np.sum(np.absolute(exemple - x)), self._data))
 
         sorted_data, sorted_labels = zip(*sorted(zip(dist, list(range(len(self._labels))))))
         predicted_labels = np.take(self._labels, sorted_labels[:self._n_neighbors])

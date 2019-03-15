@@ -15,15 +15,14 @@ class BayesNaif:
         self.cnt_classes_occ = np.bincount(train_labels)
         self._means = self._compute_classes_means(train, train_labels)
         self._priors = self._compute_classes_priors(train_labels)
-        self._cov_mats, self.sigma_ = self._compute_classes_cov_mat(train, train_labels)
+        self._cov_mats, self.diag_cov_mat = self._compute_classes_cov_mat(train, train_labels)
         self._shared_cov_mat = self._shared_naive_cov_mats()
 
     def predict(self, exemple, label):
-        h = ((-1/2) * np.sum(np.power(exemple[None, :] - self._means, 2) / np.diagonal(self._shared_cov_mat)[None, :], axis=1) + np.log(self._priors))
-
-        tt = self._joint_log_likelihood(np.asarray(exemple))
+        # h = ((-1/2) * np.sum(np.power(exemple[None, :] - self._means, 2) / np.diagonal(self._shared_cov_mat)[None, :], axis=1) + np.log(self._priors))
+        h = self.cpu_log_likelihood(np.asarray(exemple))
+        # pred = np.argmax(h)
         pred = np.argmax(h)
-        pred = np.argmax(tt)
 
         return pred
 
@@ -112,19 +111,17 @@ class BayesNaif:
 
         return S_shared
 
-    def _joint_log_likelihood(self, X):
-
-        joint_log_likelihood = []
+    def cpu_log_likelihood(self, X):
+        log_likelihood = []
         for i in range(np.size(self.cnt_classes_occ)):
-            jointi = np.log(self._priors[i])
-            n_ij = - 0.5 * np.sum(np.log(2. * np.pi * self.sigma_[i, :]))
-            n_ij -= 0.5 * np.sum(((X - self._means[i, :]) ** 2) /
-                                    (self.sigma_[i, :]))
-            joint_log_likelihood.append(jointi + n_ij)
+            l_val = np.log(self._priors[i])
+            temp = - 0.5 * np.sum(np.log(2. * np.pi * self.diag_cov_mat[i, :]))
+            temp -= 0.5 * np.sum(((X - self._means[i, :]) ** 2) / (self.diag_cov_mat[i, :]))
+            log_likelihood.append(l_val + temp)
 
-        joint_log_likelihood = np.array(joint_log_likelihood).T
+        log_likelihood = np.transpose(np.array(log_likelihood))
         
-        return joint_log_likelihood
+        return log_likelihood
         
 
 
