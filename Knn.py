@@ -15,9 +15,14 @@ class Knn:
         self._n_neighbors = n_neighbors
         self._metric = metric
 
-    def train(self, train, train_labels):
+    def train(self, train, train_labels, muted=False):
         self._data = train.copy()
         self._labels = train_labels.copy()
+
+        #test on training data
+        if not muted:
+            print('Test on training data:')
+            self.test(train, train_labels, muted=muted)
 
     def predict(self, exemple, label):
         #eucledian distance
@@ -51,7 +56,7 @@ class Knn:
         labels = np.unique(true_label, return_counts=True)
 
         #build the confusion matrix
-        #y = prediction x=actual class
+        #row = prediction col=actual class
         confusion_mat = np.zeros((len(labels[0]), len(labels[0])))
         
         for pred_y, true_y in zip(pred_label, true_label):
@@ -82,7 +87,7 @@ class Knn:
             print("Accuracy: ", score, '\n')
             print("Confusion Matrix:\n", confusion_matrix, '\n')
             print("Precision: ", precision, '\n')
-            print("Recall: ",recall, '\n')
+            print("Recall: ", recall, '\n')
 
         return score
 

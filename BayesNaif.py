@@ -11,12 +11,16 @@ import numpy as np
 
 class BayesNaif:
         
-    def train(self, train, train_labels):
+    def train(self, train, train_labels, muted=False):
         self.cnt_classes_occ = np.bincount(train_labels)
         self._means = self._compute_classes_means(train, train_labels)
         self._priors = self._compute_classes_priors(train_labels)
         self._cov_mats, self.diag_cov_mat = self._compute_classes_cov_mat(train, train_labels)
         self._shared_cov_mat = self._shared_naive_cov_mats()
+
+        if not muted:
+            print('Test on training data:')
+            self.test(train, train_labels, muted=muted)
 
     def predict(self, exemple, label):
         # h = ((-1/2) * np.sum(np.power(exemple[None, :] - self._means, 2) / np.diagonal(self._shared_cov_mat)[None, :], axis=1) + np.log(self._priors))
@@ -55,22 +59,24 @@ class BayesNaif:
 
         return precision
 
-    def test(self, test, test_labels):
+    def test(self, test, test_labels, muted=False):
+        #muted: print or do not print results
+
         pred = list(map(lambda x, label: self.predict(x, label), test, test_labels))
         
         score = self.accuracy(pred, test_labels)
-        print("Accuracy: ", score, '\n')
-
         confusion_matrix = self.confusion_matrix(pred, test_labels)
-        print("Confusion Matrix:\n", confusion_matrix, '\n')
-
         precision = self.precision(confusion_matrix)
-        print("Precision: ", precision, '\n')
-
         recall = self.recall(confusion_matrix)
-        print("Recall: ",recall, '\n')
 
-        self.recall(confusion_matrix)
+        if not muted:
+            print("Accuracy: ", score, '\n')
+            print("Confusion Matrix:\n", confusion_matrix, '\n')
+            print("Precision: ", precision, '\n')
+            print("Recall: ",recall, '\n')
+
+        return score
+
 
     def _compute_classes_means(self, train, train_labels):
         classes = np.unique(train_labels)
